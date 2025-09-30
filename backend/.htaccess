@@ -1,0 +1,61 @@
+# Configuração Apache para API Backend
+
+RewriteEngine On
+
+# Habilitar CORS
+Header always set Access-Control-Allow-Origin "*"
+Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+Header always set Access-Control-Allow-Headers "Content-Type, Authorization"
+
+# Responder a requisições OPTIONS (preflight)
+RewriteCond %{REQUEST_METHOD} OPTIONS
+RewriteRule ^(.*)$ $1 [R=200,L]
+
+# Roteamento para APIs
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Rota para autenticação
+RewriteRule ^auth/(.*)$ api/auth.php [QSA,L]
+
+# Rota para dispositivos
+RewriteRule ^devices/(.*)$ api/devices.php [QSA,L]
+RewriteRule ^devices$ api/devices.php [QSA,L]
+
+# Rota para ações de dispositivos
+RewriteRule ^actions/(.*)$ api/actions.php [QSA,L]
+RewriteRule ^actions$ api/actions.php [QSA,L]
+
+# Rota para dados de sensores
+RewriteRule ^sensors/(.*)$ api/sensors.php [QSA,L]
+RewriteRule ^sensors$ api/sensors.php [QSA,L]
+
+# Bloquear acesso direto a arquivos de configuração
+<Files "*.php">
+    Order allow,deny
+    Allow from all
+</Files>
+
+<Files "database.php">
+    Order deny,allow
+    Deny from all
+</Files>
+
+<Files "config.php">
+    Order deny,allow
+    Deny from all
+</Files>
+
+# Configurações de segurança
+ServerTokens Prod
+ServerSignature Off
+
+# Desabilitar listagem de diretórios
+Options -Indexes
+
+# Configuração de timeout
+Timeout 300
+
+# Configuração de upload
+php_value upload_max_filesize 10M
+php_value post_max_size 10M
